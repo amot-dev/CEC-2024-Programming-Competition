@@ -26,8 +26,8 @@ class Resources:
         data = np.genfromtxt(file, delimiter=',', skip_header=1)
         x_coords = data[:, 1].astype(int)
         y_coords = data[:, 2].astype(int)
-        values = data[:, 3]
+        value = data[:, 3]
         table_shape = (np.max(x_coords) + 1, np.max(y_coords) + 1)
         table = np.zeros(table_shape)
-        table[x_coords, y_coords] = values
+        table[x_coords, y_coords] = abs(value)
         return table

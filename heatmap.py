@@ -52,21 +52,23 @@ class Heatmap:
 
 
         # Find the maximum absolute value in the data from the checked boxes
-        minvalue = 0
-        maxvalue = 0
+        minvalue = 0.0
+        maxvalue = 0.0
+        obtain = True
         if self.layer_toggle_vars[0].get():
-            maxvalue += self.resources.oil.max()
+            maxvalue += np.nanmax(self.resources.oil)
         elif self.layer_toggle_vars[1].get():
-            maxvalue += self.resources.metals.max()
+            maxvalue += np.nanmax(self.resources.metals)
         elif self.layer_toggle_vars[2].get():
-            maxvalue += self.resources.helium.max()
+            maxvalue += np.nanmax(self.resources.helium)
         elif self.layer_toggle_vars[3].get():
-            maxvalue += self.resources.ships.max()
-            minvalue += self.resources.ships.min()
+            maxvalue += np.nanmax(self.resources.ships)
         elif self.layer_toggle_vars[4].get():
-            minvalue += self.resources.coral_reef.min()
+            maxvalue += np.nanmax(self.resources.coral_reef)
+            obtain = False
         elif self.layer_toggle_vars[5].get():
-            minvalue += self.resources.endangered_species.min()
+            maxvalue += np.nanmax(self.resources.endangered_species)
+            obtain = False
 
         self.canvas.delete("all")  # Clear the canvas
         for i in range(100):
@@ -78,28 +80,23 @@ class Heatmap:
                 if self.resources.world[i, j] == 1:
                     color = "#808080"
                 else:
-                    # Sum the values from all checked boxes
-                    total = 0
-                    total += self.resources.oil[i, j] if self.layer_toggle_vars[0].get() else 0
-                    total += self.resources.metals[i, j] if self.layer_toggle_vars[1].get() else 0
-                    total += self.resources.helium[i, j] if self.layer_toggle_vars[2].get() else 0
-                    total += self.resources.ships[i, j] if self.layer_toggle_vars[3].get() else 0
-                    total += self.resources.coral_reef[i, j] if self.layer_toggle_vars[4].get() else 0
-                    total += self.resources.endangered_species[i, j] if self.layer_toggle_vars[5].get() else 0
+                    # Take the value of the selected radio box (unselected boxes will add 0)
+                    value = 0
+                    value += self.resources.oil[i, j] if self.layer_toggle_vars[0].get() and not np.isnan(self.resources.oil[i, j]) else 0
+                    value += self.resources.metals[i, j] if self.layer_toggle_vars[1].get() and not np.isnan(self.resources.metals[i, j]) else 0
+                    value += self.resources.helium[i, j] if self.layer_toggle_vars[2].get() and not np.isnan(self.resources.helium[i, j]) else 0
+                    value += self.resources.ships[i, j] if self.layer_toggle_vars[3].get() and not np.isnan(self.resources.ships[i, j]) else 0
+                    value += self.resources.coral_reef[i, j] if self.layer_toggle_vars[4].get() and not np.isnan(self.resources.coral_reef[i, j]) else 0
+                    value += self.resources.endangered_species[i, j] if self.layer_toggle_vars[5].get() and not np.isnan(self.resources.endangered_species[i, j]) else 0
 
                     # Convert the total to a color for the heatmap
-                    if total > 0:
-                        if maxvalue == 0:
-                            color = "#FFFFFF"
-                        else:
-                            green_component = int(255 * total / maxvalue)  # Scale the value to the range 0-255
-                            color = "#00%02x00" % green_component  # Green for positive values
+                    print(i, j, value, maxvalue, minvalue)
+                    if maxvalue == 0:
+                        color = "#000000"
                     else:
-                        if minvalue == 0:
-                            color = "#FFFFFF"
-                        else:
-                            red_component = int(255 * abs(total) / abs(minvalue))
-                            color = "#%02x0000" % red_component  # Red for negative values
+                        # Green for preserve resources and Red for obtain resources
+                        component = int(255 * value / maxvalue)  # Scale the value to the range 0-255
+                        color = "#00%02x00" % component if obtain else "#%02x0000" % component
                 self.canvas.create_rectangle(rectangle_left_edge,
                                              rectangle_top_edge,
                                              rectangle_right_edge,
