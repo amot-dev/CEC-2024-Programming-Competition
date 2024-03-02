@@ -60,10 +60,10 @@ class Algorithm:
                     queue.append(move)
                 node.calculate_value(resources_today)
                 if len(best_nodes) < self.top_n:
-                    heapq.heappush(best_nodes, (node.value, node))
+                    best_nodes.append(node)
                 elif best_nodes[0][0] < node.value:
-                    heapq.heappop(best_nodes)
-                    heapq.heappush(best_nodes, (node.value, node))
+                    min_object = min(best_nodes, key=lambda n: n.value)
+                    best_nodes.remove(min_object)
                 explored.add(node)
         return best_nodes
 
