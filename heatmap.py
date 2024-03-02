@@ -8,7 +8,7 @@ class Heatmap:
         self.resources = resources.Resources()
         self.heatmap_window = tk.Toplevel(root)
         self.layer_toggle_labels = ["Oil", "Metals", "Helium", "Ships", "Coral Reef", "Endangered Species"]
-        self.layer_toggle_vars = [tk.IntVar() for _ in self.layer_toggle_labels]  # Variables to hold toggle states
+        self.layer_toggle_vars = tk.IntVar() # Variables to hold toggle states
 
         # Create day label and arrow buttons
         self.decrement_button = tk.Button(self.heatmap_window, text="<", command=lambda: self.increment_day(-1))
@@ -26,8 +26,8 @@ class Heatmap:
 
         # Create layer toggles
         for i in range(len(self.layer_toggle_labels)):
-            toggle = tk.Checkbutton(self.heatmap_window, text=self.layer_toggle_labels[i],
-                                    variable=self.layer_toggle_vars[i], command=self.draw_grid)
+            toggle = tk.Radiobutton(self.heatmap_window, text=self.layer_toggle_labels[i],
+                                    variable=self.layer_toggle_vars, value=i, command=self.draw_grid)
             toggle.grid(row=i + 1, column=4, pady=0)  # Start from row 1 to leave space for day label and buttons
 
         # Create and draw canvas grid
@@ -35,6 +35,7 @@ class Heatmap:
         self.canvas.grid(row=0, column=5, rowspan=100)
         self.cell_size = 5  # size of one cell in pixels
         self.draw_grid()
+
 
     def increment_day(self, count):
         day = self.day_var.get()
@@ -50,24 +51,25 @@ class Heatmap:
         self.resources.start_day(day)
         self.draw_grid()
 
+
     def draw_grid(self):
         resource = None
 
         # Find the maximum absolute value in the data from the checked boxes
         maxvalue = 0.0
         obtain = True
-        if self.layer_toggle_vars[0].get():
+        if self.layer_toggle_vars.get() == 0:
             maxvalue += np.nanmax(self.resources.oil)
-        elif self.layer_toggle_vars[1].get():
+        elif self.layer_toggle_vars.get() == 1:
             maxvalue += np.nanmax(self.resources.metals)
-        elif self.layer_toggle_vars[2].get():
+        elif self.layer_toggle_vars.get() == 2:
             maxvalue += np.nanmax(self.resources.helium)
-        elif self.layer_toggle_vars[3].get():
+        elif self.layer_toggle_vars.get() == 3:
             maxvalue += np.nanmax(self.resources.ships)
-        elif self.layer_toggle_vars[4].get():
+        elif self.layer_toggle_vars.get() == 4:
             maxvalue += np.nanmax(self.resources.coral_reef)
             obtain = False
-        elif self.layer_toggle_vars[5].get():
+        elif self.layer_toggle_vars.get() == 5:
             maxvalue += np.nanmax(self.resources.endangered_species)
             obtain = False
 
@@ -84,18 +86,17 @@ class Heatmap:
                 else:
                     # Take the value of the selected radio box (unselected boxes will add 0)
                     value = 0
-                    value += self.resources.oil[i, j] if self.layer_toggle_vars[0].get() and not np.isnan(
+                    value += self.resources.oil[i, j] if self.layer_toggle_vars.get() == 0 and not np.isnan(
                         self.resources.oil[i, j]) else 0
-                    value += self.resources.metals[i, j] if self.layer_toggle_vars[1].get() and not np.isnan(
+                    value += self.resources.metals[i, j] if self.layer_toggle_vars.get() == 1 and not np.isnan(
                         self.resources.metals[i, j]) else 0
-                    value += self.resources.helium[i, j] if self.layer_toggle_vars[2].get() and not np.isnan(
+                    value += self.resources.helium[i, j] if self.layer_toggle_vars.get() == 2 and not np.isnan(
                         self.resources.helium[i, j]) else 0
-                    value += self.resources.ships[i, j] if self.layer_toggle_vars[3].get() and not np.isnan(
+                    value += self.resources.ships[i, j] if self.layer_toggle_vars.get() == 3 and not np.isnan(
                         self.resources.ships[i, j]) else 0
-                    value += self.resources.coral_reef[i, j] if self.layer_toggle_vars[4].get() and not np.isnan(
+                    value += self.resources.coral_reef[i, j] if self.layer_toggle_vars.get() == 4 and not np.isnan(
                         self.resources.coral_reef[i, j]) else 0
-                    value += self.resources.endangered_species[i, j] if self.layer_toggle_vars[
-                                                                            5].get() and not np.isnan(
+                    value += self.resources.endangered_species[i, j] if self.layer_toggle_vars.get() == 5 and not np.isnan(
                         self.resources.endangered_species[i, j]) else 0
 
                     # Convert the total to a color for the heatmap
