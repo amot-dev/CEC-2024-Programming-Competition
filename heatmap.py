@@ -8,27 +8,36 @@ class Heatmap:
         self.resources = resources.Resources()
         self.heatmap_window = tk.Toplevel(root)
         self.layer_toggle_labels = ["Oil", "Metals", "Helium", "Ships", "Coral Reef", "Endangered Species"]
-        self.layer_toggle_vars = tk.IntVar() # Variables to hold toggle states
+        self.layer_toggle_vars = tk.IntVar()  # Variables to hold toggle states
+
+        # Styling constants
+        button_font = ("Arial", 10, "bold")
+        radio_font = ("Arial", 10)
+        button_color = "#0078D7"  # blue
+        radio_color = "#f0f0f0"  # Light grey
+        text_color = "#000000"  # black
 
         # Create day label and arrow buttons
-        self.decrement_button = tk.Button(self.heatmap_window, text="<", command=lambda: self.increment_day(-1))
-        self.decrement_button.grid(row=0, column=0, pady=0)
+        self.decrement_button = tk.Button(self.heatmap_window, text="<", font=button_font, bg=button_color, fg=text_color, command=lambda: self.increment_day(-1))
+        self.decrement_button.grid(row=0, column=0, pady=5, padx=5)
 
-        self.daytext_label = tk.Label(self.heatmap_window, text="Day: ")
-        self.daytext_label.grid(row=0, column=1, pady=0)
+        self.daytext_label = tk.Label(self.heatmap_window, text="Day: ", font=button_font)
+        self.daytext_label.grid(row=0, column=1, pady=5)
 
         self.day_var = tk.IntVar(value=1)
-        self.day_label = tk.Label(self.heatmap_window, textvariable=self.day_var)
-        self.day_label.grid(row=0, column=2, pady=0)
+        self.day_label = tk.Label(self.heatmap_window, textvariable=self.day_var, font=button_font)
+        self.day_label.grid(row=0, column=2, pady=5)
 
-        self.increment_button = tk.Button(self.heatmap_window, text=">", command=lambda: self.increment_day(1))
-        self.increment_button.grid(row=0, column=3, pady=0)
+        self.increment_button = tk.Button(self.heatmap_window, text=">", font=button_font, bg=button_color, fg=text_color, command=lambda: self.increment_day(1))
+        self.increment_button.grid(row=0, column=3, pady=5, padx=5)
 
         # Create layer toggles
-        for i in range(len(self.layer_toggle_labels)):
-            toggle = tk.Radiobutton(self.heatmap_window, text=self.layer_toggle_labels[i],
-                                    variable=self.layer_toggle_vars, value=i, command=self.draw_grid)
-            toggle.grid(row=i + 1, column=4, pady=0)  # Start from row 1 to leave space for day label and buttons
+        for i, label in enumerate(self.layer_toggle_labels):
+            toggle = tk.Radiobutton(self.heatmap_window, text=label, font=radio_font, bg=radio_color,
+                                    variable=self.layer_toggle_vars, value=i, indicatoron=False,
+                                    command=self.draw_grid, selectcolor=button_color, fg=text_color)
+            toggle.grid(row=i + 1, column=1, pady=2, sticky='ew')  # Align to the left with 'w' and set column to 0
+
 
         # Create and draw canvas grid
         self.canvas = tk.Canvas(self.heatmap_window, width=500, height=500)
