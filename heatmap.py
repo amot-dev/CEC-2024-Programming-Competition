@@ -36,7 +36,7 @@ class Heatmap:
             toggle = tk.Radiobutton(self.heatmap_window, text=label, font=radio_font, bg=radio_color,
                                     variable=self.layer_toggle_vars, value=i, indicatoron=False,
                                     command=self.draw_grid, selectcolor=button_color, fg=text_color)
-            toggle.grid(row=i + 1, column=1, pady=2, sticky='ew')  # Align to the left with 'w' and set column to 0
+            toggle.grid(row=i + 1, column=1, pady=2, sticky='ew')
 
 
         # Create and draw canvas grid
