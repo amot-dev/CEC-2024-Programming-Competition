@@ -23,7 +23,8 @@ def main():
     map_button.pack(**padding)
 
     # Algorithm Button
-    algorithm_button = tk.Button(root, text="Algorithm", font=button_font, bg=button_color, fg='white', command=lambda: heatmap.Heatmap(root))
+    algo = algorithm.Algorithm()
+    algorithm_button = tk.Button(root, text="Algorithm", font=button_font, bg=button_color, fg='white', command=lambda: algo.run_algorithm(1))
     algorithm_button.pack(**padding)
 
     # Days Radio Buttons
@@ -53,7 +54,7 @@ def create_radio_group(root, label_text, range_values, label_font, padding):
         tk.Radiobutton(frame, text=str(i), variable=radio_var, value=i, bg='#f0f0f0').pack(side='left')
 
 def create_scaler_entry(frame, label, font, default_value=""):
-    entry_frame = tk.Frame(frame, bg='#f0f0f0')  # Assuming your frame has a background color set to light grey
+    entry_frame = tk.Frame(frame, bg='#f0f0f0')  # Assuming frame has a background color set to light grey
     entry_frame.pack(pady=5)
     tk.Label(entry_frame, text=label, bg='#f0f0f0', font=font).pack(side='left')
     entry = tk.Entry(entry_frame, font=font, validate="key", validatecommand=(entry_frame.register(lambda P: P.replace('.', '', 1).isdigit() or P == ""), '%P'))
