@@ -50,7 +50,7 @@ class Algorithm:
     '''
 
     def local_search(self, start_node, day):
-        resources_today = self.world_state[day]
+        resources_today = self.world_state[day-1]
         best_nodes = []
         queue = deque()
         explored = set()
@@ -63,10 +63,10 @@ class Algorithm:
                     queue.append(move)
                 node.calculate_value(resources_today)
                 if len(best_nodes) < self.top_n:
-                    heapq.heappush(best_nodes, (node.value, node))
+                    best_nodes.append(node)
                 elif best_nodes[0][0] < node.value:
-                    heapq.heappop(best_nodes)
-                    heapq.heappush(best_nodes, (node.value, node))
+                    min_object = min(best_nodes, key=lambda n: n.value)
+                    best_nodes.remove(min_object)
                 explored.add(node)
         return best_nodes
 
@@ -112,17 +112,22 @@ class Algorithm:
         # Run search on the first day
         max_value = 0
         max_node = None
+        best_candidate = None
 
         candidate_list = self.local_search(start_node, start_day)
         candidate_list.sort(key=lambda node: node.value)
-        best_candidate = candidate_list[-1]
+        if candidate_list:
+            best_candidate = candidate_list[-1]
 
         if start_day == end_day:
             return best_candidate
 
+
+
         for candidate_node in candidate_list:
             next_node = self.regional_search(candidate_node, start_day + 1, end_day)
-            candidate_node.value += next_node.value
+            if next_node:
+                candidate_node.value += next_node.value
         for candidate_node in candidate_list:
             if candidate_node.value > max_value:
                 max_value = candidate_node.value
