@@ -1,7 +1,6 @@
 from resources import Resources
-import numpy as np
 from collections import deque
-import heapq
+import heatmap
 
 
 class Algorithm:
@@ -12,18 +11,26 @@ class Algorithm:
 
     def run_algorithm(self, days_to_look_ahead):
         start_node = self.find_best_start()
+        moves = list()
         for current_day in range(1, 31):
+            moves_today = list()
             end_day = current_day + days_to_look_ahead
             if end_day > 30:
                 end_day = 30
-            end_node = self.regional_search(start_node, current_day, end_day)
+            start_node = self.regional_search(start_node, current_day, end_day)
+            moves_today.append(start_node.path)
+            moves.append(moves_today)
+        stop_color = "yellow"
+        moving_color = "white"
+        path = moves, stop_color, moving_color
+        heatmap.rig_paths.append(path)
 
     '''
     Finds the optimal start position
     '''
 
     def find_best_start(self):
-        return Node(0, 0, -1, list())
+        return Node(2, 2, -1, list())
 
     '''
     Returns a list of valid moves from the current node on the current day
@@ -50,7 +57,7 @@ class Algorithm:
     '''
 
     def local_search(self, start_node, day):
-        resources_today = self.world_state[day-1]
+        resources_today = self.world_state[day - 1]
         best_nodes = []
         queue = deque()
         explored = set()
@@ -69,38 +76,6 @@ class Algorithm:
                     best_nodes.remove(min_object)
                 explored.add(node)
         return best_nodes
-
-    # def local_search(self, node, day):
-    #     best_nodes = []
-    #     q = deque()
-    #     seen = set()
-    #     q.append(node)
-    #     while q:
-    #         curr_node = q.popleft()
-    #         if (curr_node.x, curr_node.y) in seen:
-    #             continue
-    #         elif self.world_state[day].world[curr_node.x][curr_node.y] == 1:
-    #             continue
-    #         elif curr_node.x < 0 or curr_node.y >= 100: # out of bounds
-    #             continue
-    #         elif curr_node.x > node.x + 5 or curr_node < node.x - 5:
-    #             continue
-    #         elif curr_node.y > node.y + 5 or curr_node.y < node.y - 5:
-    #             continue
-    #         else:
-    #             seen.add((curr_node.x, curr_node.y))
-    #             if len(best_nodes) < self.top_n:
-    #                 heapq.heappush()
-    #
-    #             q.append(Node(x=curr_node.x + 1, y=curr_node.y + 1, parent_path=curr_node.path))
-    #             q.append(Node(x=curr_node.x + 1, y=curr_node.y + 0, parent_path=curr_node.path))
-    #             q.append(Node(x=curr_node.x + 1, y=curr_node.y - 1, parent_path=curr_node.path))
-    #             q.append(Node(x=curr_node.x + 0, y=curr_node.y + 1, parent_path=curr_node.path))
-    #             q.append(Node(x=curr_node.x + 0, y=curr_node.y - 1, parent_path=curr_node.path))
-    #             q.append(Node(x=curr_node.x - 1, y=curr_node.y + 1, parent_path=curr_node.path))
-    #             q.append(Node(x=curr_node.x - 1, y=curr_node.y + 0, parent_path=curr_node.path))
-    #             q.append(Node(x=curr_node.x - 1, y=curr_node.y - 1, parent_path=curr_node.path))
-    #     return list()
 
     '''
     Searches in the area reachable in N days
@@ -121,8 +96,6 @@ class Algorithm:
 
         if start_day == end_day:
             return best_candidate
-
-
 
         for candidate_node in candidate_list:
             next_node = self.regional_search(candidate_node, start_day + 1, end_day)

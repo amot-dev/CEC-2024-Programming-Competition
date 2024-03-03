@@ -2,11 +2,11 @@ import tkinter as tk
 import numpy as np
 import resources
 
+rig_paths = list()
 
 class Heatmap:
     def __init__(self, root):
         self.resources = resources.Resources()
-        self.rig_paths = list()
         self.heatmap_window = tk.Toplevel(root)
         self.layer_toggle_labels = ["Oil", "Metals", "Helium", "Ships", "Coral Reef", "Endangered Species"]
         self.layer_toggle_vars = tk.IntVar()  # Variables to hold toggle states
@@ -122,9 +122,9 @@ class Heatmap:
                                              rectangle_right_edge,
                                              rectangle_bottom_edge,
                                              fill=color, outline="")
-        for rig_path in self.rig_paths:
+        for rig_path in rig_paths:
             moves, stop_color, moving_color = rig_path
-            day_moves = moves[self.day_var]
+            day_moves = moves[self.day_var.get() - 1]
             for move in day_moves:
                 rectangle_left_edge = move.y * self.cell_size
                 rectangle_top_edge = move.x * self.cell_size
@@ -136,7 +136,3 @@ class Heatmap:
                                              rectangle_right_edge,
                                              rectangle_bottom_edge,
                                              fill=color, outline="")
-
-    def add_rig_path(self, moves, stop_color, moving_color):
-        path = moves, stop_color, moving_color
-        self.rig_paths.append(path)
