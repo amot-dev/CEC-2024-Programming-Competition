@@ -47,3 +47,7 @@ python main.py
     - 2nd sprint was focused on algorithm development
     - 3rd sprint was focsued on the visually displaying the algorithm
     - Presentation development was done concurrently
+ 
+  ## References
+* [numpy](https://numpy.org/)
+* [tkinter](https://docs.python.org/3/library/tk.html)
