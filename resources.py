@@ -44,8 +44,20 @@ class Resources:
         data = np.genfromtxt(file, delimiter=',', skip_header=1)
         x_coords = data[:, 1].astype(int)
         y_coords = data[:, 2].astype(int)
-        value = data[:, 3]
+        values = data[:, 3]
+
+        # absolute values to ensure all values are positive
+        abs_values = np.abs(values)
+        # Find the maximum value for normalization
+        max_value = np.max(abs_values)
+        # Avoid division by zero by checking if max_value is not 0
+        normalized_values = abs_values / max_value if max_value > 0 else abs_values
+
+        # Determine the shape of the table based on the max coordinates
         table_shape = (np.max(x_coords) + 1, np.max(y_coords) + 1)
+        # Initialize the table with zeros
         table = np.zeros(table_shape)
-        table[x_coords, y_coords] = abs(value)
+
+        table[x_coords, y_coords] = normalized_values
+
         return table
