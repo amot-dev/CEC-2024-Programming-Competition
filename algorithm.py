@@ -21,12 +21,14 @@ class Algorithm:
     '''
     Finds the optimal start position
     '''
+
     def find_best_start(self):
         return Node(0, 0, -1, list())
 
     '''
     Returns a list of valid moves from the current node on the current day
     '''
+
     def valid_moves(self, node, day):
         x = node.x
         y = node.y
@@ -46,6 +48,7 @@ class Algorithm:
     start is a Node that represents the start of the search
     day is the day the search is performed on
     '''
+
     def local_search(self, start_node, day):
         resources_today = self.world_state[day]
         best_nodes = []
@@ -104,6 +107,7 @@ class Algorithm:
     start is a Node that represents the start of the search
     day is the day the search is performed on
     '''
+
     def regional_search(self, start_node, start_day, end_day):
         # Run search on the first day
         max_value = 0
@@ -124,6 +128,7 @@ class Algorithm:
                 max_value = candidate_node.value
                 max_node = candidate_node
         return max_node
+
 
 class Node:
     def __init__(self, x, y, value, parent_path):

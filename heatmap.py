@@ -6,6 +6,7 @@ import resources
 class Heatmap:
     def __init__(self, root):
         self.resources = resources.Resources()
+        self.rig_paths = list()
         self.heatmap_window = tk.Toplevel(root)
         self.layer_toggle_labels = ["Oil", "Metals", "Helium", "Ships", "Coral Reef", "Endangered Species"]
         self.layer_toggle_vars = tk.IntVar()  # Variables to hold toggle states
@@ -18,7 +19,8 @@ class Heatmap:
         text_color = "#000000"  # black
 
         # Create day label and arrow buttons
-        self.decrement_button = tk.Button(self.heatmap_window, text="<", font=button_font, bg=button_color, fg=text_color, command=lambda: self.increment_day(-1))
+        self.decrement_button = tk.Button(self.heatmap_window, text="<", font=button_font, bg=button_color,
+                                          fg=text_color, command=lambda: self.increment_day(-1))
         self.decrement_button.grid(row=0, column=0, pady=5, padx=5)
 
         self.daytext_label = tk.Label(self.heatmap_window, text="Day: ", font=button_font)
@@ -28,7 +30,8 @@ class Heatmap:
         self.day_label = tk.Label(self.heatmap_window, textvariable=self.day_var, font=button_font)
         self.day_label.grid(row=0, column=2, pady=5)
 
-        self.increment_button = tk.Button(self.heatmap_window, text=">", font=button_font, bg=button_color, fg=text_color, command=lambda: self.increment_day(1))
+        self.increment_button = tk.Button(self.heatmap_window, text=">", font=button_font, bg=button_color,
+                                          fg=text_color, command=lambda: self.increment_day(1))
         self.increment_button.grid(row=0, column=3, pady=5, padx=5)
 
         # Create layer toggles
@@ -38,13 +41,11 @@ class Heatmap:
                                     command=self.draw_grid, selectcolor=button_color, fg=text_color)
             toggle.grid(row=i + 1, column=1, pady=2, sticky='ew')  # Align to the left with 'w' and set column to 0
 
-
         # Create and draw canvas grid
         self.canvas = tk.Canvas(self.heatmap_window, width=500, height=500)
         self.canvas.grid(row=0, column=5, rowspan=100)
         self.cell_size = 5  # size of one cell in pixels
         self.draw_grid()
-
 
     def increment_day(self, count):
         day = self.day_var.get()
@@ -59,7 +60,6 @@ class Heatmap:
         # Update grid
         self.resources.start_day(day)
         self.draw_grid()
-
 
     def draw_grid(self):
         resource = None
@@ -105,7 +105,8 @@ class Heatmap:
                         self.resources.ships[i, j]) else 0
                     value += self.resources.coral_reef[i, j] if self.layer_toggle_vars.get() == 4 and not np.isnan(
                         self.resources.coral_reef[i, j]) else 0
-                    value += self.resources.endangered_species[i, j] if self.layer_toggle_vars.get() == 5 and not np.isnan(
+                    value += self.resources.endangered_species[
+                        i, j] if self.layer_toggle_vars.get() == 5 and not np.isnan(
                         self.resources.endangered_species[i, j]) else 0
 
                     # Convert the total to a color for the heatmap
@@ -121,3 +122,21 @@ class Heatmap:
                                              rectangle_right_edge,
                                              rectangle_bottom_edge,
                                              fill=color, outline="")
+        for rig_path in self.rig_paths:
+            moves, stop_color, moving_color = rig_path
+            day_moves = moves[self.day_var]
+            for move in day_moves:
+                rectangle_left_edge = move.y * self.cell_size
+                rectangle_top_edge = move.x * self.cell_size
+                rectangle_right_edge = rectangle_left_edge + self.cell_size
+                rectangle_bottom_edge = rectangle_top_edge + self.cell_size
+                color = stop_color if move == day_moves[-1] else moving_color
+                self.canvas.create_rectangle(rectangle_left_edge,
+                                             rectangle_top_edge,
+                                             rectangle_right_edge,
+                                             rectangle_bottom_edge,
+                                             fill=color, outline="")
+
+    def add_rig_path(self, moves, stop_color, moving_color):
+        path = moves, stop_color, moving_color
+        self.rig_paths.append(path)
