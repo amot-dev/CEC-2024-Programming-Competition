@@ -1,4 +1,5 @@
 # CEC 2024 - DEVELOPER DOCUMENTATION
+![Screenshot 2024-03-02 162018](https://github.com/amot-dev/CEC-2024-Programming-Competition/assets/74273268/7adfb259-852e-42c6-9a81-334596f0f153)
 
 ## Description
 
